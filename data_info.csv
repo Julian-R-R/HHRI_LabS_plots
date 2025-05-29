@@ -1,0 +1,18 @@
+run,filename,columns,data_labels,ranges,ranges_gauss,target
+torque,data/torque_control.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(119.5, 123)","(-inf, inf)",
+eval_torque_J_r,data/eval_torque_jul_r_2.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(726, 733)","(-inf, inf)",20.0
+eval_torque_J_l,data/eval_torque_jul_l_1.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(1692, 1701)","(1682, 1737)",20.0
+eval_torque_F,data/eval_torque_forarm_r_1.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(120.5, 128)","(-inf, inf)",42.0
+eval_torque_G,data/eval_torque_giu_r_1.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(3554.5, 3561.5)","(-inf, inf)",20.0
+position,data/position_control.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]')","['Position', 'EMG mean']","(56.5, 59.5)","(-inf, inf)",
+eval_position_J_r,data/eval_pos_jul_r_2.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]')","['Position', 'EMG mean']","(1119, 1126)","(1119, 1154)",20.0
+eval_position_J_l,data/eval_pos_jul_l_1.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]')","['Position', 'EMG mean']","(2011, 2018)","(1984, 2018)",20.0
+eval_position_F,data/eval_pos_forarm_r_1.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]')","['Position', 'EMG mean']","(79.5, 85)","(-inf, inf)",20.0
+eval_position_G,data/eval_pos_giu_r_1.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]')","['Position', 'EMG mean']","(3171, 3177)","(-inf, inf)",20.0
+precise_pos,data/eval_precise_pos_jul_r_1_train.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')","['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']","(176, 182.25)","(-inf, inf)",
+eval_precise_pos_J_r_train,data/eval_precise_pos_jul_r_1_train.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')","['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']","(165.5, 171.5)","(155, 182)",20.0
+eval_precise_pos_J_r,data/eval_precise_pos_jul_r_3.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')","['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']","(205, 211.8)","(173, 202)",20.0
+eval_precise_pos_J_l_train,data/eval_precise_pos_jul_l_1_train.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')","['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']","(2335.5, 2341.2)","(2330.5, 2353)",20.0
+eval_precise_pos_J_l,data/eval_precise_pos_jul_l_3.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')","['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']","(2718.5, 2724.5)","(2719, 2747)",20.0
+eval_precise_pos_F_train,data/eval_precise_pos_forarm_r_1_train.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')","['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']","(137.2, 141.2)","(134, 149)",20.0
+eval_precise_pos_F,data/eval_precise_pos_forarm_r_1.csv,"('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')","['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']","(390.5, 394.75)","(383, 402)",20.0
