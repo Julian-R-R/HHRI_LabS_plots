@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 filnames = {
+    'raw': 'data/emg_raw_filt_mean.csv',
     'torque': 'data/torque_control.csv',
     'eval_torque_J_r': 'data/eval_torque_jul_r_2.csv',
     'eval_torque_J_l': 'data/eval_torque_jul_l_1.csv',
@@ -23,6 +24,7 @@ filnames = {
 }
 
 keep_data = {
+    'raw': ('EMG value [V]', 'Filtered EMG value [V]', 'EMG mean [V]'),
     'torque': ('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'eval_torque_J_r': ('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'eval_torque_J_l': ('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]'),
@@ -43,6 +45,7 @@ keep_data = {
 }
 
 data_labels = {
+    'raw': ['EMG value', 'Filtered EMG value', 'EMG mean'],
     'torque': ['Torque', 'Position', 'EMG mean'],
     'eval_torque_J_r': ['Torque', 'Position', 'EMG mean'],
     'eval_torque_J_l': ['Torque', 'Position', 'EMG mean'],
@@ -63,6 +66,7 @@ data_labels = {
 }
 
 ranges = {
+    'raw': (186, 188.8),
     'torque': (119.5, 123),
     'eval_torque_J_r': (726, 733),
     'eval_torque_J_l': (1692, 1701),
@@ -83,6 +87,7 @@ ranges = {
 }
 
 ranges_gauss = {
+    'raw': (-np.inf, np.inf),
     'torque': (-np.inf, np.inf),
     'eval_torque_J_r': (-np.inf, np.inf),
     'eval_torque_J_l': (1682, 1737),
@@ -103,6 +108,7 @@ ranges_gauss = {
 }
 
 target_values = {
+    'raw': None,
     'torque': None,
     'eval_torque_J_r': 20,
     'eval_torque_J_l': 20,
@@ -186,28 +192,6 @@ def load_data(df_input, run="", trim_type='ranges', trim=False):
         
     return df
 
-def plot_raw():
-    colors = ['royalblue', 'darkorange', 'teal', 'crimson', 'darkgreen', 'purple', 'gold']
-    title_fontsize = 22
-    label_fontsize = 14
-    tick_fontsize = 14
-    legend_fontsize = 14
-
-    figsize = (14, 9)
-    plt.figure(figsize=figsize)
-    for i, col in enumerate(df.columns):
-        plt.subplot(3, 1, i + 1)
-        plt.plot(df.index, df[col], color=colors[i % len(colors)], label=data_label[i] if i < len(data_label) else col)
-        plt.title(f'Plot of {data_label[i] if i < len(data_label) else col}', fontsize=title_fontsize)
-        plt.xlabel('Time [s]', fontsize=label_fontsize)
-        plt.ylabel('Values [V]', fontsize=label_fontsize)
-        plt.xticks(fontsize=tick_fontsize)
-        plt.yticks(fontsize=tick_fontsize)
-        if i != 2:
-            plt.ylim(0.5, 1.8)
-        plt.grid()
-        plt.legend(fontsize=legend_fontsize, loc='upper right')
-
 def plot_data(df, run, plot_name, save=False, all=False):
     colors = ['royalblue', 'darkorange', 'teal', 'crimson', 'darkgreen', 'purple', 'gold']
     title_fontsize = 22
@@ -220,7 +204,24 @@ def plot_data(df, run, plot_name, save=False, all=False):
     data_label = df_info.loc[df_info['run'] == run, 'data_labels'].values[0]
     target = df_info.loc[df_info['run'] == run, 'target'].values[0]
 
-    if 'torque' in run:
+    if "raw" in run:
+        plt.figure(figsize=figsize)
+        for i, col in enumerate(df.columns):
+            plt.subplot(3, 1, i + 1)
+            plt.plot(df.index, df[col], color=colors[i], label=data_label[i])
+            plt.title(f'Plot of {data_label[i]}', fontsize=title_fontsize)
+            plt.xlabel('Time [s]', fontsize=label_fontsize)
+            plt.ylabel('Values [V]', fontsize=label_fontsize)
+            plt.xticks(fontsize=tick_fontsize)
+            plt.yticks(fontsize=tick_fontsize)
+            if i != 2:
+                plt.ylim(0.5, 1.8)
+            else:
+                plt.ylim(0, 0.008)
+            plt.xlim(df.index[0], df.index[-1])
+            plt.grid()
+            plt.legend(fontsize=legend_fontsize, loc='upper right')
+    elif 'torque' in run:
         fig, ax1 = plt.subplots(figsize=figsize)
         ax1.set_xlabel('Time [s]', fontsize=label_fontsize)
         ax1.set_ylabel(data_label[1] + ' [deg]', color=colors[0], fontsize=label_fontsize)
@@ -586,20 +587,20 @@ def compute_mean_std(df, run_type="pos", save_fig=True):
     
     plt.close()
 
-# run = 'eval_torque_J_r'  # Change this to 'raw', 'torque', 'pos', or 'precise_pos' as needed
-# save_fig = False
-# plot_name = 'plots/' + run + '_plot.png'
-# data = load_data(df_info, run, trim_type='ranges_gauss', trim=True)
+run = 'raw'  # Change this to 'raw', 'torque', 'pos', or 'precise_pos' as needed
+save_fig = False
+plot_name = 'plots_3/' + run + '_plot.png'
+data = load_data(df_info, run, trim=True)
 
 # new_data = divide_chunks(data, column='encoder_paddle_pos [deg]', threshold=10)
 
 # mean, std = calculate_mean_std_pos(new_data)
 # plot_mean_std(mean, std, targets=[df_info.loc[df_info['run'] == run, 'target'].values[0]], labels=['Mean', 'Std'], show=True)
 
-# plot_data(data, run, plot_name)
+plot_data(data, run, plot_name, save=True)
 
+# save_all_plots()
 # compute_gaussian_precise(df_info)
 # compute_mean_std(df_info)
 # compute_mean_std(df_info, run_type="torque")
 
-save_all_plots()
