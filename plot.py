@@ -2,6 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+TITLE_FONTSIZE = 28
+LABEL_FONTSIZE = 24
+TICK_FONTSIZE = 22
+LEGEND_FONTSIZE = 18
+FIGURE_SIZE = (16, 10)
+SAVE = False
+
 filnames = {
     'raw': 'data/emg_raw_filt_mean.csv',
     'torque': 'data/torque_control.csv',
@@ -200,12 +207,12 @@ def get_half_ticks(data_min, data_max):
 
 def plot_data(df, run, plot_name, save=False, all=False):
     colors = ['royalblue', 'darkorange', 'teal', 'crimson', 'darkgreen', 'purple', 'gold']
-    title_fontsize = 22
-    label_fontsize = 14
-    tick_fontsize = 14
-    legend_fontsize = 14
-
-    figsize = (14, 9)
+    # Use global font size and figure size variables
+    title_fontsize = TITLE_FONTSIZE
+    label_fontsize = LABEL_FONTSIZE
+    tick_fontsize = TICK_FONTSIZE
+    legend_fontsize = LEGEND_FONTSIZE
+    figsize = FIGURE_SIZE
 
     data_label = df_info.loc[df_info['run'] == run, 'data_labels'].values[0]
     target = df_info.loc[df_info['run'] == run, 'target'].values[0]
@@ -369,11 +376,11 @@ def plot_data(df, run, plot_name, save=False, all=False):
         plt.show()
 
 
-def save_all_plots():
+def save_all_plots(save_figures=True):
     for run in filnames:
         data = load_data(df_info, run, trim=True)
         plot_name = 'plots_3/' + run + f'_plot.png'
-        plot_data(data, run, plot_name, save=True, all=True)
+        plot_data(data, run, plot_name, save=save_figures, all=True)
         print(f"Plots for {run} saved.")
 
 
@@ -444,6 +451,13 @@ def plot_gaussian(mean, std, targets=None, labels=None, show=False):
     """
     import collections.abc
 
+    # Use global font size and figure size variables
+    title_fontsize = TITLE_FONTSIZE
+    label_fontsize = LABEL_FONTSIZE
+    tick_fontsize = TICK_FONTSIZE
+    legend_fontsize = LEGEND_FONTSIZE
+    figsize = FIGURE_SIZE
+
     # Ensure mean and std are iterable
     if not isinstance(mean, collections.abc.Iterable):
         mean = [mean]
@@ -457,7 +471,7 @@ def plot_gaussian(mean, std, targets=None, labels=None, show=False):
     if targets is not None and not isinstance(targets, collections.abc.Iterable):
         targets = [targets]
 
-    plt.figure(figsize=(14, 9))
+    plt.figure(figsize=figsize)
     colors = ['blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink']
     for i, (m, s) in enumerate(zip(mean, std)):
         x = np.linspace(m - 4*s, m + 4*s, 1000)
@@ -470,11 +484,13 @@ def plot_gaussian(mean, std, targets=None, labels=None, show=False):
             plt.axvline(x=t, color='green', linestyle='--', label=f'Target: {int(t)}°')
             plt.axvspan(t-2.5, t+2.5, color='green', alpha=0.2, label='±2.5° zone')
 
-    plt.title('Gaussian Distribution', fontsize=22)
-    plt.xlabel('Position [deg]', fontsize=14)
-    plt.ylabel('Probability Density', fontsize=14)
+    plt.title('Gaussian Distribution', fontsize=title_fontsize)
+    plt.xlabel('Position [deg]', fontsize=label_fontsize)
+    plt.ylabel('Probability Density', fontsize=label_fontsize)
+    plt.xticks(fontsize=tick_fontsize)
+    plt.yticks(fontsize=tick_fontsize)
     plt.grid()
-    plt.legend(fontsize=14)
+    plt.legend(fontsize=legend_fontsize)
     plt.tight_layout()
 
     if show:
@@ -487,6 +503,13 @@ def plot_mean_std(mean, std, targets=None, labels=None, show=False):
     Optionally, targets and labels can be provided for reference lines and legend.
     """
     import collections.abc
+
+    # Use global font size and figure size variables
+    title_fontsize = TITLE_FONTSIZE
+    label_fontsize = LABEL_FONTSIZE
+    tick_fontsize = TICK_FONTSIZE
+    legend_fontsize = LEGEND_FONTSIZE
+    figsize = FIGURE_SIZE
 
     # Ensure mean and std are iterable
     if not isinstance(mean, collections.abc.Iterable):
@@ -503,7 +526,7 @@ def plot_mean_std(mean, std, targets=None, labels=None, show=False):
 
     x = np.arange(len(mean))
     
-    plt.figure(figsize=(14, 9))
+    plt.figure(figsize=figsize)
     plt.errorbar(x, mean, yerr=std, fmt='o', capsize=5, color='skyblue', ecolor='black', elinewidth=1.5, markersize=8)
     # Annotate each point with its mean and std
     for i, (xm, ym, ys) in enumerate(zip(x, mean, std)):
@@ -517,17 +540,22 @@ def plot_mean_std(mean, std, targets=None, labels=None, show=False):
             plt.axhspan(t-2.5, t+2.5, color='green', alpha=0.2, label='±2.5° zone')
 
     # plt.xticks(x, labels, rotation=45)
-    plt.title('Mean and Standard Deviation', fontsize=22)
-    plt.ylabel('Position [deg]', fontsize=14)
-    plt.xlabel('Runs', fontsize=14)
+    plt.title('Mean and Standard Deviation', fontsize=title_fontsize)
+    plt.ylabel('Position [deg]', fontsize=label_fontsize)
+    plt.xlabel('Runs', fontsize=label_fontsize)
+    plt.xticks(fontsize=tick_fontsize)
+    plt.yticks(fontsize=tick_fontsize)
     plt.grid(axis='y')
-    plt.legend(fontsize=14, loc='upper right')
+    plt.legend(fontsize=legend_fontsize, loc='upper right')
     plt.tight_layout()
     
     if show:
         plt.show()
 
 def compute_gaussian_precise(df, save_fig=True):
+    """
+    Compute and plot Gaussian distributions for precise position runs.
+    """
     runs = ['eval_precise_pos_J_r',
             'eval_precise_pos_J_l',
             'eval_precise_pos_F']
@@ -610,6 +638,71 @@ def compute_mean_std(df, run_type="pos", save_fig=True):
     
     plt.close()
 
+def compute_all_gaussian(df, save_fig=True):
+    """
+    Plot Gaussian distributions for each subject (J_r, J_l, F, G) across all three control strategies:
+    torque, position, and precise position.
+    If the target is 42, shift all means and targets by -22 to recenter the target to 20.
+    """
+    subjects = [
+        ("J_r", "Subject 1 right arm"),
+        ("J_l", "Subject 1 left arm"),
+        ("F", "Subject 1 forearm"),
+        ("G", "Subject 2 right arm"),
+    ]
+    strategies = [
+        ("torque", "eval_torque_{}"),
+        ("position", "eval_position_{}"),
+        ("precise_pos", "eval_precise_pos_{}"),
+    ]
+
+    for subj_code, subj_label in subjects:
+        means = []
+        stds = []
+        labels = []
+        targets = []
+        shift = 0
+        for strat_name, run_fmt in strategies:
+            run = run_fmt.format(subj_code)
+            # For precise_pos, use the validation run (not train)
+            if strat_name == "precise_pos" and run not in df['run'].values:
+                run = f"eval_precise_pos_{subj_code}"
+            if run not in df['run'].values:
+                continue
+            data = load_data(df, run, trim_type='ranges_gauss', trim=True)
+            if data is None or data.empty:
+                continue
+            # Divide into chunks and compute mean/std
+            if strat_name == "precise_pos":
+                chunks = divide_chunks(data)
+                mean, std = calculate_mean_std_precise(chunks)
+            else:
+                threshold = 5 if strat_name == "position" else df.loc[df['run'] == run, 'target'].values[0] - 10
+                chunks = divide_chunks(data, column='encoder_paddle_pos [deg]', threshold=threshold)
+                mean_list, std_list = calculate_mean_std_pos(chunks)
+                mean = np.mean(mean_list)
+                std = np.mean(std_list)
+            target = df.loc[df['run'] == run, 'target'].values[0]
+            # Determine shift if target is 42
+            if target == 42:
+                shift = -22
+            else:
+                shift = 0
+            means.append(mean + shift)
+            stds.append(std)
+            labels.append(strat_name.replace("_", " ").capitalize())
+            t_shifted = target + shift if target is not None else None
+            if t_shifted not in targets:
+                targets.append(t_shifted)
+        # Plot all three strategies for this subject
+        if means and stds:
+            plot_gaussian(means, stds, targets=targets, labels=labels, show=not save_fig)
+            if save_fig:
+                plot_name = f'plots_3/gaussian_{subj_code}_all_strategies.png'
+                plt.savefig(plot_name, dpi=150)
+                print(f"Gaussian plot for {subj_label} saved as {plot_name}")
+            plt.close()
+
 # run = 'position'  # Change this to 'raw', 'torque', 'pos', or 'precise_pos' as needed
 # save_fig = False
 # plot_name = 'plots_3/' + run + '_plot.png'
@@ -622,8 +715,14 @@ def compute_mean_std(df, run_type="pos", save_fig=True):
 
 # plot_data(data, run, plot_name, save=False)
 
-# save_all_plots()
-compute_gaussian_precise(df_info)
-compute_mean_std(df_info)
-compute_mean_std(df_info, run_type="torque")
+# save_all_plots(save_figures=SAVE)
+compute_gaussian_precise(df_info, save_fig=SAVE)
+# compute_all_gaussian(df_info, save_fig=SAVE)
+# compute_mean_std(df_info, save_fig=SAVE)
+# compute_mean_std(df_info, run_type="torque", save_fig=SAVE)
+
+if SAVE:
+    print("All plots generated and saved successfully.")
+else:
+    print("All plots generated and displayed interactively.")
 
