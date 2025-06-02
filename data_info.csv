@@ -1,6 +1,6 @@
 run,filename,columns,data_labels,ranges,ranges_gauss,target
 raw,data/emg_raw_filt_mean.csv,"('EMG value [V]', 'Filtered EMG value [V]', 'EMG mean [V]')","['EMG value', 'Filtered EMG value', 'EMG mean']","(186, 188.8)","(-inf, inf)",
-torque,data/torque_control.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(119.5, 123)","(-inf, inf)",
+torque,data/torque_control.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(118.5, 123)","(-inf, inf)",
 eval_torque_J_r,data/eval_torque_jul_r_2.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(726, 733)","(-inf, inf)",20.0
 eval_torque_J_l,data/eval_torque_jul_l_1.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(1692, 1701)","(1682, 1737)",20.0
 eval_torque_F,data/eval_torque_forarm_r_1.csv,"('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]')","['Torque', 'Position', 'EMG mean']","(120.5, 128)","(-inf, inf)",42.0

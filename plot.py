@@ -67,7 +67,7 @@ data_labels = {
 
 ranges = {
     'raw': (186, 188.8),
-    'torque': (119.5, 123),
+    'torque': (118.5, 123),
     'eval_torque_J_r': (726, 733),
     'eval_torque_J_l': (1692, 1701),
     'eval_torque_F': (120.5, 128),
@@ -208,16 +208,22 @@ def plot_data(df, run, plot_name, save=False, all=False):
         plt.figure(figsize=figsize)
         for i, col in enumerate(df.columns):
             plt.subplot(3, 1, i + 1)
-            plt.plot(df.index, df[col], color=colors[i], label=data_label[i])
+            if i != 2:
+                plt.plot(df.index, df[col], color=colors[i], label=data_label[i])
+            else:
+                plt.plot(df.index, df[col]*1000, color=colors[i], label=data_label[i])
             plt.title(f'Plot of {data_label[i]}', fontsize=title_fontsize)
             plt.xlabel('Time [s]', fontsize=label_fontsize)
-            plt.ylabel('Values [V]', fontsize=label_fontsize)
+            if i != 2:
+                plt.ylabel('Values [V]', fontsize=label_fontsize)
+            else:
+                plt.ylabel('Values [mV]', fontsize=label_fontsize)
             plt.xticks(fontsize=tick_fontsize)
             plt.yticks(fontsize=tick_fontsize)
             if i != 2:
                 plt.ylim(0.5, 1.8)
             else:
-                plt.ylim(0, 0.008)
+                plt.ylim(0, 8)
             plt.xlim(df.index[0], df.index[-1])
             plt.grid()
             plt.legend(fontsize=legend_fontsize, loc='upper right')
@@ -225,7 +231,7 @@ def plot_data(df, run, plot_name, save=False, all=False):
         fig, ax1 = plt.subplots(figsize=figsize)
         ax1.set_xlabel('Time [s]', fontsize=label_fontsize)
         ax1.set_ylabel(data_label[1] + ' [deg]', color=colors[0], fontsize=label_fontsize)
-        ax1.plot(df.index, df[df.columns[1]], color=colors[0], label=data_label[1] if len(data_label) > 1 else df.columns[1])
+        ax1.plot(df.index, df[df.columns[1]], color=colors[0], label=data_label[1])
         ax1.tick_params(axis='y', labelcolor=colors[0], labelsize=tick_fontsize)
         ax1.tick_params(axis='x', labelsize=tick_fontsize)
         ax1.grid()
@@ -239,19 +245,19 @@ def plot_data(df, run, plot_name, save=False, all=False):
         color3 = colors[2]
         ylabels = []
         if len(data_label) > 0:
-            ylabels.append(data_label[0])
-            ylabels.append(' [N.m]')
+            ylabels.append(data_label[0] + ' [mN.m]')
+            # ylabels.append(' [N.m]')
         else:
             ylabels.append(df.columns[0])
         if len(data_label) > 2:
-            ylabels.append(data_label[2])
-            ylabels.append(' [V]')
+            ylabels.append(data_label[2] + ' [mV]')
+            # ylabels.append(' [V]')
         else:
             ylabels.append(df.columns[2])
-        ax2.set_ylabel(' / '.join(ylabels), color=color2, fontsize=label_fontsize)
-        ax2.plot(df.index, df[df.columns[0]], color=color2, label=ylabels[0])
-        ax2.plot(df.index, df[df.columns[2]], color=color3, label=ylabels[1])
-        ax2.tick_params(axis='y', labelcolor=color2, labelsize=tick_fontsize)
+        ax2.set_ylabel(' / '.join(ylabels), color='black', fontsize=label_fontsize)
+        ax2.plot(df.index, df[df.columns[0]]*1000, color=color2, label=data_label[0])
+        ax2.plot(df.index, df[df.columns[2]]*1000, color=color3, label=data_label[2])
+        ax2.tick_params(axis='y', labelcolor='black', labelsize=tick_fontsize)
         ax2.tick_params(axis='x', labelsize=tick_fontsize)
 
             # Combine legends from both axes
@@ -276,9 +282,9 @@ def plot_data(df, run, plot_name, save=False, all=False):
 
         ax2 = ax1.twinx()
         color2 = colors[1]
-        ax2.set_ylabel(data_label[1] + ' [V]', color=color2, fontsize=label_fontsize)
-        ax2.plot(df.index, df[df.columns[1]], color=color2, label=data_label[1] if len(data_label) > 1 else df.columns[1])
-        ax2.tick_params(axis='y', labelcolor=color2, labelsize=tick_fontsize)
+        ax2.set_ylabel(data_label[1] + ' [mV]', color='black', fontsize=label_fontsize)
+        ax2.plot(df.index, df[df.columns[1]]*1000, color=color2, label=data_label[1])
+        ax2.tick_params(axis='y', labelcolor='black', labelsize=tick_fontsize)
         ax2.tick_params(axis='x', labelsize=tick_fontsize)
 
         # Combine legends from both axes
@@ -304,14 +310,14 @@ def plot_data(df, run, plot_name, save=False, all=False):
         colors2 = colors[1:4]
         for i, col in enumerate(df.columns[1:]):
             label = data_label[i+1]
-            ax2.plot(df.index, df[col], color=colors2[i], label=label)
+            ax2.plot(df.index, df[col]*1000, color=colors2[i], label=label)
 
         ylabels = []
-        ylabels.append(data_label[1] + ' [V]')
+        ylabels.append(data_label[1] + ' [mV]')
         if len(data_label) > 2:
-            ylabels.append(data_label[2] + ' [V]')
+            ylabels.append(data_label[2] + ' [mV]')
         if len(data_label) > 3:
-            ylabels.append(data_label[3] + ' [V]')
+            ylabels.append(data_label[3] + ' [mV]')
         ax2.set_ylabel(' / '.join(ylabels), color='black', fontsize=label_fontsize)
         ax2.tick_params(axis='y', labelcolor='black', labelsize=tick_fontsize)
         ax2.tick_params(axis='x', labelsize=tick_fontsize)
@@ -342,7 +348,7 @@ def plot_data(df, run, plot_name, save=False, all=False):
         plt.savefig(f'{plot_name}', dpi=150)
         # print(f"Plot saved as plots/{plot_name}")
 
-    if not all:
+    if not save:
         plt.show()
 
 
@@ -350,7 +356,7 @@ def save_all_plots():
     for run in filnames:
         data = load_data(df_info, run, trim=True)
         plot_name = 'plots_3/' + run + f'_plot.png'
-        plot_data(data, run, plot_name, save=True, all=True)
+        plot_data(data, run, plot_name, save=False, all=True)
         print(f"Plots for {run} saved.")
 
 
@@ -587,19 +593,19 @@ def compute_mean_std(df, run_type="pos", save_fig=True):
     
     plt.close()
 
-run = 'raw'  # Change this to 'raw', 'torque', 'pos', or 'precise_pos' as needed
-save_fig = False
-plot_name = 'plots_3/' + run + '_plot.png'
-data = load_data(df_info, run, trim=True)
+# run = 'position'  # Change this to 'raw', 'torque', 'pos', or 'precise_pos' as needed
+# save_fig = False
+# plot_name = 'plots_3/' + run + '_plot.png'
+# data = load_data(df_info, run, trim=True)
 
 # new_data = divide_chunks(data, column='encoder_paddle_pos [deg]', threshold=10)
 
 # mean, std = calculate_mean_std_pos(new_data)
 # plot_mean_std(mean, std, targets=[df_info.loc[df_info['run'] == run, 'target'].values[0]], labels=['Mean', 'Std'], show=True)
 
-plot_data(data, run, plot_name, save=True)
+# plot_data(data, run, plot_name, save=False)
 
-# save_all_plots()
+save_all_plots()
 # compute_gaussian_precise(df_info)
 # compute_mean_std(df_info)
 # compute_mean_std(df_info, run_type="torque")
