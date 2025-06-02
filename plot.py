@@ -192,6 +192,12 @@ def load_data(df_input, run="", trim_type='ranges', trim=False):
         
     return df
 
+def get_half_ticks(data_min, data_max):
+    """Return ticks from below data_min to above data_max with 0.5 increments."""
+    start = np.floor(data_min * 2) / 2
+    end = np.ceil(data_max * 2) / 2
+    return np.arange(start, end + 0.5, 0.5)
+
 def plot_data(df, run, plot_name, save=False, all=False):
     colors = ['royalblue', 'darkorange', 'teal', 'crimson', 'darkgreen', 'purple', 'gold']
     title_fontsize = 22
@@ -203,6 +209,8 @@ def plot_data(df, run, plot_name, save=False, all=False):
 
     data_label = df_info.loc[df_info['run'] == run, 'data_labels'].values[0]
     target = df_info.loc[df_info['run'] == run, 'target'].values[0]
+
+    x_ticks = get_half_ticks(df.index.min(), df.index.max())
 
     if "raw" in run:
         plt.figure(figsize=figsize)
@@ -218,7 +226,7 @@ def plot_data(df, run, plot_name, save=False, all=False):
                 plt.ylabel('Values [V]', fontsize=label_fontsize)
             else:
                 plt.ylabel('Values [mV]', fontsize=label_fontsize)
-            plt.xticks(fontsize=tick_fontsize)
+            plt.xticks(x_ticks, fontsize=tick_fontsize)
             plt.yticks(fontsize=tick_fontsize)
             if i != 2:
                 plt.ylim(0.5, 1.8)
@@ -237,8 +245,10 @@ def plot_data(df, run, plot_name, save=False, all=False):
         ax1.grid()
 
         if 'eval' in run:
-            ax1.axhline(y=target, color='green', linestyle='--', label='Target')
-            ax1.axhspan(target-2.5, target+2.5, color='green', alpha=0.2, label='Target region')
+            ax1.axhline(y=target, color='green', linestyle='--', label=f'Target: {int(target)}°')
+            ax1.axhspan(target-2.5, target+2.5, color='green', alpha=0.2, label='±2.5° zone')
+
+        ax1.set_xticks(x_ticks)
 
         ax2 = ax1.twinx()
         color2 = colors[1]
@@ -259,6 +269,7 @@ def plot_data(df, run, plot_name, save=False, all=False):
         ax2.plot(df.index, df[df.columns[2]]*1000, color=color3, label=data_label[2])
         ax2.tick_params(axis='y', labelcolor='black', labelsize=tick_fontsize)
         ax2.tick_params(axis='x', labelsize=tick_fontsize)
+        ax2.set_xticks(x_ticks)
 
             # Combine legends from both axes
         lines, labels = ax1.get_legend_handles_labels()
@@ -271,14 +282,16 @@ def plot_data(df, run, plot_name, save=False, all=False):
         color1 = colors[0]
         ax1.set_xlabel('Time [s]', fontsize=label_fontsize)
         ax1.set_ylabel(data_label[0] + ' [deg]', color=color1, fontsize=label_fontsize)
-        ax1.plot(df.index, df[df.columns[0]], color=color1, label=data_label[0] if len(data_label) > 0 else df.columns[0])
+        ax1.plot(df.index, df[df.columns[0]], color=color1, label=data_label[0])
         ax1.tick_params(axis='y', labelcolor=color1, labelsize=tick_fontsize)
         ax1.tick_params(axis='x', labelsize=tick_fontsize)
         ax1.grid()
 
         if 'eval' in run:
-            ax1.axhline(y=target, color='green', linestyle='--', label='Target')
-            ax1.axhspan(target-2.5, target+2.5, color='green', alpha=0.2, label='Target region')
+            ax1.axhline(y=target, color='green', linestyle='--', label=f'Target: {int(target)}°')
+            ax1.axhspan(target-2.5, target+2.5, color='green', alpha=0.2, label='±2.5° zone')
+
+        ax1.set_xticks(x_ticks)
 
         ax2 = ax1.twinx()
         color2 = colors[1]
@@ -286,6 +299,7 @@ def plot_data(df, run, plot_name, save=False, all=False):
         ax2.plot(df.index, df[df.columns[1]]*1000, color=color2, label=data_label[1])
         ax2.tick_params(axis='y', labelcolor='black', labelsize=tick_fontsize)
         ax2.tick_params(axis='x', labelsize=tick_fontsize)
+        ax2.set_xticks(x_ticks)
 
         # Combine legends from both axes
         lines, labels = ax1.get_legend_handles_labels()
@@ -303,8 +317,10 @@ def plot_data(df, run, plot_name, save=False, all=False):
         ax1.grid()
 
         if 'eval' in run:
-            ax1.axhline(y=target, color='green', linestyle='--', label='Target')
-            ax1.axhspan(target-2.5, target+2.5, color='green', alpha=0.2, label='Target region')
+            ax1.axhline(y=round(target), color='green', linestyle='--', label=f'Target: {int(target)}°')
+            ax1.axhspan(target-2.5, target+2.5, color='green', alpha=0.2, label='±2.5° zone')
+
+        ax1.set_xticks(x_ticks)
 
         ax2 = ax1.twinx()
         colors2 = colors[1:4]
@@ -321,6 +337,7 @@ def plot_data(df, run, plot_name, save=False, all=False):
         ax2.set_ylabel(' / '.join(ylabels), color='black', fontsize=label_fontsize)
         ax2.tick_params(axis='y', labelcolor='black', labelsize=tick_fontsize)
         ax2.tick_params(axis='x', labelsize=tick_fontsize)
+        ax2.set_xticks(x_ticks)
 
         # Combine legends from both axes
         lines, labels = ax1.get_legend_handles_labels()
@@ -337,7 +354,7 @@ def plot_data(df, run, plot_name, save=False, all=False):
         plt.xlabel('Time [s]', fontsize=label_fontsize)
         plt.ylabel('Values [V]', fontsize=label_fontsize)
         plt.title(f'Plot of {run} data', fontsize=title_fontsize)
-        plt.xticks(fontsize=tick_fontsize)
+        plt.xticks(x_ticks, fontsize=tick_fontsize)
         plt.yticks(fontsize=tick_fontsize)
         plt.legend(fontsize=legend_fontsize, ncol=len(df.columns))
 
@@ -356,7 +373,7 @@ def save_all_plots():
     for run in filnames:
         data = load_data(df_info, run, trim=True)
         plot_name = 'plots_3/' + run + f'_plot.png'
-        plot_data(data, run, plot_name, save=False, all=True)
+        plot_data(data, run, plot_name, save=True, all=True)
         print(f"Plots for {run} saved.")
 
 
@@ -450,8 +467,8 @@ def plot_gaussian(mean, std, targets=None, labels=None, show=False):
     # Plot target(s) if provided
     if targets is not None:
         for t in targets:
-            plt.axvline(x=t, color='green', linestyle='--', label='Target')
-            plt.axvspan(t-2.5, t+2.5, color='green', alpha=0.2, label='Target region')
+            plt.axvline(x=t, color='green', linestyle='--', label=f'Target: {int(t)}°')
+            plt.axvspan(t-2.5, t+2.5, color='green', alpha=0.2, label='±2.5° zone')
 
     plt.title('Gaussian Distribution', fontsize=22)
     plt.xlabel('Position [deg]', fontsize=14)
@@ -496,8 +513,8 @@ def plot_mean_std(mean, std, targets=None, labels=None, show=False):
     # Plot target(s) if provided
     if targets is not None:
         for t in targets:
-            plt.axhline(y=t, color='green', linestyle='--', label='Target')
-            plt.axhspan(t-2.5, t+2.5, color='green', alpha=0.2, label='Target region')
+            plt.axhline(y=t, color='green', linestyle='--', label=f'Target: {int(t)}°')
+            plt.axhspan(t-2.5, t+2.5, color='green', alpha=0.2, label='±2.5° zone')
 
     # plt.xticks(x, labels, rotation=45)
     plt.title('Mean and Standard Deviation', fontsize=22)
@@ -605,8 +622,8 @@ def compute_mean_std(df, run_type="pos", save_fig=True):
 
 # plot_data(data, run, plot_name, save=False)
 
-save_all_plots()
-# compute_gaussian_precise(df_info)
-# compute_mean_std(df_info)
-# compute_mean_std(df_info, run_type="torque")
+# save_all_plots()
+compute_gaussian_precise(df_info)
+compute_mean_std(df_info)
+compute_mean_std(df_info, run_type="torque")
 
