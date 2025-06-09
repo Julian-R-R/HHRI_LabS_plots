@@ -2,13 +2,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# === Global Plotting Parameters ===
 TITLE_FONTSIZE = 28
 LABEL_FONTSIZE = 24
 TICK_FONTSIZE = 22
 LEGEND_FONTSIZE = 18
 FIGURE_SIZE = (16, 10)
-SAVE = False
+SAVE = True
 
+
+# Target Cyprien 14° 
+
+# === Data Configuration ===
 filnames = {
     'raw': 'data/emg_raw_filt_mean.csv',
     'torque': 'data/torque_control.csv',
@@ -16,18 +21,23 @@ filnames = {
     'eval_torque_J_l': 'data/eval_torque_jul_l_1.csv',
     'eval_torque_F': 'data/eval_torque_forarm_r_1.csv',
     'eval_torque_G': 'data/eval_torque_giu_r_1.csv',
+    'eval_torque_C_r': 'data/eval_torque_C_r.csv',
     'position': 'data/position_control.csv',
-    'eval_position_J_r': 'data/eval_pos_jul_r_2.csv',
+    'eval_position_J_r': 'data/eval_pos_jul_r_2.csv', 
     'eval_position_J_l': 'data/eval_pos_jul_l_1.csv',
     'eval_position_F': 'data/eval_pos_forarm_r_1.csv',
     'eval_position_G': 'data/eval_pos_giu_r_1.csv',
+    'eval_position_C_r': 'data/eval_pos_C_r.csv',
     'precise_pos': 'data/eval_precise_pos_jul_r_1_train.csv',
     'eval_precise_pos_J_r_train': 'data/eval_precise_pos_jul_r_1_train.csv',
     'eval_precise_pos_J_r': 'data/eval_precise_pos_jul_r_3.csv',
     'eval_precise_pos_J_l_train': 'data/eval_precise_pos_jul_l_1_train.csv',
     'eval_precise_pos_J_l': 'data/eval_precise_pos_jul_l_3.csv',
     'eval_precise_pos_F_train': 'data/eval_precise_pos_forarm_r_1_train.csv',
-    'eval_precise_pos_F': 'data/eval_precise_pos_forarm_r_1.csv'
+    'eval_precise_pos_F': 'data/eval_precise_pos_forarm_r_1.csv',
+    'eval_precise_pos_C_r_train': 'data/eval_precise_pos_C_r_train.csv',
+    'eval_precise_pos_C_r': 'data/eval_precise_pos_C_r.csv'
+
 }
 
 keep_data = {
@@ -37,18 +47,22 @@ keep_data = {
     'eval_torque_J_l': ('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'eval_torque_F': ('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'eval_torque_G': ('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]'),
+    'eval_torque_C_r': ('motor_torque [N.m]', 'encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'position': ('encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'eval_position_J_r': ('encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'eval_position_J_l': ('encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'eval_position_F': ('encoder_paddle_pos [deg]', 'EMG mean [V]'),
     'eval_position_G': ('encoder_paddle_pos [deg]', 'EMG mean [V]'),
+    'eval_position_C_r': ('encoder_paddle_pos [deg]', 'EMG mean [V]'), #r_2
     'precise_pos': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]'),
     'eval_precise_pos_J_r_train': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]'),
     'eval_precise_pos_J_r': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]'),
     'eval_precise_pos_J_l_train': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]'),
     'eval_precise_pos_J_l': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]'),
     'eval_precise_pos_F_train': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]'),
-    'eval_precise_pos_F': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')
+    'eval_precise_pos_F': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]'),
+    'eval_precise_pos_C_r_train': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]'),
+    'eval_precise_pos_C_r': ('encoder_paddle_pos [deg]', 'EMG mean [V]', 'EMG thres rise [V]', 'EMG thres fall [V]')
 }
 
 data_labels = {
@@ -58,18 +72,22 @@ data_labels = {
     'eval_torque_J_l': ['Torque', 'Position', 'EMG mean'],
     'eval_torque_F': ['Torque', 'Position', 'EMG mean'],
     'eval_torque_G': ['Torque', 'Position', 'EMG mean'],
+    'eval_torque_C_r': ['Torque', 'Position', 'EMG mean'],
     'position': ['Position', 'EMG mean'],
     'eval_position_J_r': ['Position', 'EMG mean'],
     'eval_position_J_l': ['Position', 'EMG mean'],
     'eval_position_F': ['Position', 'EMG mean'],
     'eval_position_G': ['Position', 'EMG mean'],
+    'eval_position_C_r': ['Position', 'EMG mean'], #r_2
     'precise_pos': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall'],
     'eval_precise_pos_J_r_train': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall'],
     'eval_precise_pos_J_r': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall'],
     'eval_precise_pos_J_l_train': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall'],
     'eval_precise_pos_J_l': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall'],
     'eval_precise_pos_F_train': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall'],
-    'eval_precise_pos_F': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']
+    'eval_precise_pos_F': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall'],
+    'eval_precise_pos_C_r_train': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall'],
+    'eval_precise_pos_C_r': ['Position', 'EMG mean', 'Threshold rise', 'Threshold fall']
 }
 
 ranges = {
@@ -79,18 +97,22 @@ ranges = {
     'eval_torque_J_l': (1692, 1701),
     'eval_torque_F': (120.5, 128),
     'eval_torque_G': (3554.5, 3561.5),
+    'eval_torque_C_r': (-np.inf, np.inf), 
     'position': (56.5, 59.5),
     'eval_position_J_r': (1119, 1126),
     'eval_position_J_l': (2011, 2018),
     'eval_position_F': (79.5, 85),
     'eval_position_G': (3171, 3177),
+    'eval_position_C_r': (np.inf, np.inf), 
     'precise_pos': (176, 182.25),
     'eval_precise_pos_J_r_train': (165.5, 171.5),
     'eval_precise_pos_J_r': (205, 211.8),
     'eval_precise_pos_J_l_train': (2335.5, 2341.2),
     'eval_precise_pos_J_l': (2718.5, 2724.5),
     'eval_precise_pos_F_train': (137.2, 141.2),
-    'eval_precise_pos_F': (390.5, 394.75)
+    'eval_precise_pos_F': (390.5, 394.75),
+    'eval_precise_pos_C_r_train': (np.inf, np.inf),
+    'eval_precise_pos_C_r': (np.inf, np.inf)
 }
 
 ranges_gauss = {
@@ -100,18 +122,22 @@ ranges_gauss = {
     'eval_torque_J_l': (1682, 1737),
     'eval_torque_F': (-np.inf, np.inf),
     'eval_torque_G': (-np.inf, np.inf),
+    'eval_torque_C_r': (1029, 1074),
     'position': (-np.inf, np.inf),
     'eval_position_J_r': (1119, 1154),
     'eval_position_J_l': (1984, 2018),
     'eval_position_F': (-np.inf, np.inf),
     'eval_position_G': (-np.inf, np.inf),
+    'eval_position_C_r': (-np.inf, np.inf),
     'precise_pos': (-np.inf, np.inf),
     'eval_precise_pos_J_r_train': (155, 182),
     'eval_precise_pos_J_r': (173, 202),
     'eval_precise_pos_J_l_train': (2330.5, 2353),
     'eval_precise_pos_J_l': (2719, 2747),
     'eval_precise_pos_F_train': (134, 149),
-    'eval_precise_pos_F': (383, 402)
+    'eval_precise_pos_F': (383, 402),
+    'eval_precise_pos_C_r_train': (491, 529.20),
+    'eval_precise_pos_C_r': (724.95, 764.34)
 }
 
 target_values = {
@@ -121,93 +147,146 @@ target_values = {
     'eval_torque_J_l': 20,
     'eval_torque_F': 42,
     'eval_torque_G': 20,
+    'eval_torque_C_r': 14,
     'position': None,
     'eval_position_J_r': 20,
     'eval_position_J_l': 20,
     'eval_position_F': 20,
     'eval_position_G': 20,
+    'eval_position_C_r': 14,
     'precise_pos': None,
     'eval_precise_pos_J_r_train': 20,
     'eval_precise_pos_J_r': 20,
     'eval_precise_pos_J_l_train': 20,
     'eval_precise_pos_J_l': 20,
     'eval_precise_pos_F_train': 20,
-    'eval_precise_pos_F': 20
+    'eval_precise_pos_F': 20,
+    'eval_precise_pos_C_r_train': 14,
+    'eval_precise_pos_C_r': 14
 }
 
-# Create a DataFrame from the dictionaries
+# === DataFrame Construction ===
+def build_df_info():
+    """Builds a DataFrame with all run metadata."""
+    df_dict = {
+        'run': [],
+        'filename': [],
+        'columns': [],
+        'data_labels': [],
+        'ranges': [],
+        'ranges_gauss': [],
+        'target': []
+    }
+    for key in filnames:
+        df_dict['run'].append(key)
+        df_dict['filename'].append(filnames[key])
+        df_dict['columns'].append(keep_data.get(key, None))
+        df_dict['data_labels'].append(data_labels.get(key, None))
+        df_dict['ranges'].append(ranges.get(key, None))
+        df_dict['ranges_gauss'].append(ranges_gauss.get(key, None))
+        df_dict['target'].append(target_values.get(key, None))
+    df_info = pd.DataFrame(df_dict)
+    df_info.to_csv('data_info.csv', index=False)
+    return df_info
 
-df_dict = {
-    'run': [],
-    'filename': [],
-    'columns': [],
-    'data_labels': [],
-    'ranges': [],
-    'ranges_gauss': [],
-    'target': []
-}
+df_info = build_df_info()
 
-for key in filnames:
-    df_dict['run'].append(key)
-    df_dict['filename'].append(filnames[key])
-    df_dict['columns'].append(keep_data.get(key, None))
-    df_dict['data_labels'].append(data_labels.get(key, None))
-    df_dict['ranges'].append(ranges.get(key, None))
-    df_dict['ranges_gauss'].append(ranges_gauss.get(key, None))
-    df_dict['target'].append(target_values.get(key, None))
-
-df_info = pd.DataFrame(df_dict)
-
-# save the DataFrame to a CSV file
-df_info.to_csv('data_info.csv', index=False)
-
-# start = df_info.loc[df_info['run'] == 'torque', 'ranges'].values[0][0]
-
-# print(start)
-
-
+# === Data Loading ===
 def load_data(df_input, run="", trim_type='ranges', trim=False):
     """
     Load data from a CSV file into a pandas DataFrame.
-    If the file is not found, it returns None.
+    Optionally trims the data to a specified range.
     """
     filename = df_input.loc[df_input['run'] == run, 'filename'].values[0]
-
     try:
         df = pd.read_csv(filename, sep=';', index_col=0)
         print(f"Run {run} loaded successfully with index column.")
     except FileNotFoundError:
         print(f"Run {run} not found. Loading without index column.")
-        # Attempt to load without specifying index_col
         df = None
 
     if df is None:
         return None
-    
+
     if trim:
-        start = df_input.loc[df_input['run'] == run, trim_type].values[0][0]
-        end = df_input.loc[df_input['run'] == run, trim_type].values[0][1]
-        # Select rows based on index values (not position)
+        start, end = df_input.loc[df_input['run'] == run, trim_type].values[0]
         if start > df.index[0] and end < df.index[-1]:
             df = df.loc[start:end]
-            # offset the index to start from 0
             df.index = (df.index - df.index[0])
 
     keep = df_input.loc[df_input['run'] == run, 'columns'].values[0]
-
     df = df[list(keep)]
-        
     return df
 
+# === Utility Functions ===
 def get_half_ticks(data_min, data_max):
     """Return ticks from below data_min to above data_max with 0.5 increments."""
     start = np.floor(data_min * 2) / 2
     end = np.ceil(data_max * 2) / 2
     return np.arange(start, end + 0.5, 0.5)
 
+def divide_chunks(df, column='encoder_paddle_pos [deg]', threshold=15):
+    """
+    Divide the DataFrame into chunks based on when a signal rises above a threshold and stays above it.
+    Only the specified column is kept in the output chunks.
+    Discard chunks with less than 1000 values.
+    """
+    chunks = []
+    current_chunk = []
+    above_threshold = False
+    for idx, value in df[column].items():
+        if value > threshold:
+            current_chunk.append(idx)
+            above_threshold = True
+        elif above_threshold:
+            if current_chunk:
+                chunk_array = df.loc[current_chunk, column].to_numpy()
+                if len(chunk_array) >= 1000:
+                    chunks.append(chunk_array)
+                current_chunk = []
+            above_threshold = False
+    if current_chunk:
+        chunk_array = df.loc[current_chunk, column].to_numpy()
+        if len(chunk_array) >= 1000:
+            chunks.append(chunk_array)
+    return chunks
+
+def divide_chunks_C(df, column='encoder_paddle_pos [deg]'):
+    """
+    Divide the DataFrame into chunks based on when a signal rises above a threshold and stays above it.
+    Only the specified column is kept in the output chunks.
+    Discard chunks with less than 1000 values.
+    """
+    chunks = []
+    current_chunk = []
+    time_windows = [(61.018, 67.945), (73, 79.888), (82.621, 90.686), (92.472, 98.555), (101.645, 110.080)]
+
+    #cut a new chunk for ecah time window
+    for start, end in time_windows:
+        chunk = df[(df.index >= start) & (df.index <= end)]
+        if not chunk.empty:
+            chunk_array = chunk[column].to_numpy()
+            if len(chunk_array) >= 1000:
+                chunks.append(chunk_array)
+    return chunks
+
+def calculate_mean_std_precise(chunks):
+    """Calculate the mean and standard deviation of the max value in each chunk."""
+    maxs = [np.max(chunk) for chunk in chunks if len(chunk) > 0]
+    return np.mean(maxs), np.std(maxs)
+
+def calculate_mean_std_pos(chunks):
+    """Calculate the mean and standard deviation of each chunk."""
+    means = [np.mean(chunk) for chunk in chunks if len(chunk) > 0]
+    stds = [np.std(chunk) for chunk in chunks if len(chunk) > 0]
+    return means, stds
+
+# === Plotting Functions ===
 def plot_data(df, run, plot_name, save=False, all=False):
+    """
+    Plot the data for a given run, with appropriate formatting for each control strategy.
+    """
     colors = ['royalblue', 'darkorange', 'teal', 'crimson', 'darkgreen', 'purple', 'gold']
-    # Use global font size and figure size variables
     title_fontsize = TITLE_FONTSIZE
     label_fontsize = LABEL_FONTSIZE
     tick_fontsize = TICK_FONTSIZE
@@ -216,7 +295,6 @@ def plot_data(df, run, plot_name, save=False, all=False):
 
     data_label = df_info.loc[df_info['run'] == run, 'data_labels'].values[0]
     target = df_info.loc[df_info['run'] == run, 'target'].values[0]
-
     x_ticks = get_half_ticks(df.index.min(), df.index.max())
 
     if "raw" in run:
@@ -367,81 +445,10 @@ def plot_data(df, run, plot_name, save=False, all=False):
 
     plt.xlim(df.index[0], df.index[-1])
     plt.tight_layout()
-
     if save:
         plt.savefig(f'{plot_name}', dpi=150)
-        # print(f"Plot saved as plots/{plot_name}")
-
     if not save:
         plt.show()
-
-
-def save_all_plots(save_figures=True):
-    for run in filnames:
-        data = load_data(df_info, run, trim=True)
-        plot_name = 'plots_3/' + run + f'_plot.png'
-        plot_data(data, run, plot_name, save=save_figures, all=True)
-        print(f"Plots for {run} saved.")
-
-
-def divide_chunks(df, column='encoder_paddle_pos [deg]', threshold=15):
-    """
-    Divide the DataFrame into chunks based on when a signal rises above a threshold and stays above it.
-    Only the specified column is kept in the output chunks.
-    Discard chunks with less than 1000 values.
-    """
-    chunks = []
-    current_chunk = []
-    above_threshold = False
-
-    for idx, value in df[column].items():
-        if value > threshold:
-            current_chunk.append(idx)
-            above_threshold = True
-        elif above_threshold:
-            if current_chunk:
-                chunk_array = df.loc[current_chunk, column].to_numpy()
-                if len(chunk_array) >= 1000:
-                    chunks.append(chunk_array)
-                current_chunk = []
-            above_threshold = False
-
-    if current_chunk:
-        chunk_array = df.loc[current_chunk, column].to_numpy()
-        if len(chunk_array) >= 1000:
-            chunks.append(chunk_array)
-
-    return chunks
-
-def calculate_mean_std_precise(chunks):
-    """
-    Calculate the mean and standard deviation of each chunk.
-    """
-    maxs = []
-    
-    for chunk in chunks:
-        if len(chunk) > 0:
-            maxs.append(np.max(chunk))
-        else:
-            continue
-
-    return np.mean(maxs), np.std(maxs)
-
-def calculate_mean_std_pos(chunks):
-    """
-    Calculate the mean and standard deviation of each chunk.
-    """
-    means = []
-    stds = []
-    
-    for chunk in chunks:
-        if len(chunk) > 0:
-            means.append(np.mean(chunk))
-            stds.append(np.std(chunk))
-        else:
-            continue
-
-    return means, stds
 
 def plot_gaussian(mean, std, targets=None, labels=None, show=False):
     """
@@ -451,7 +458,6 @@ def plot_gaussian(mean, std, targets=None, labels=None, show=False):
     """
     import collections.abc
 
-    # Use global font size and figure size variables
     title_fontsize = TITLE_FONTSIZE
     label_fontsize = LABEL_FONTSIZE
     tick_fontsize = TICK_FONTSIZE
@@ -477,13 +483,10 @@ def plot_gaussian(mean, std, targets=None, labels=None, show=False):
         x = np.linspace(m - 4*s, m + 4*s, 1000)
         y = (1 / (s * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - m) / s) ** 2)
         plt.plot(x, y, label=labels[i], color=colors[i])
-
-    # Plot target(s) if provided
     if targets is not None:
         for t in targets:
             plt.axvline(x=t, color='green', linestyle='--', label=f'Target: {int(t)}°')
             plt.axvspan(t-2.5, t+2.5, color='green', alpha=0.2, label='±2.5° zone')
-
     plt.title('Gaussian Distribution', fontsize=title_fontsize)
     plt.xlabel('Position [deg]', fontsize=label_fontsize)
     plt.ylabel('Probability Density', fontsize=label_fontsize)
@@ -492,7 +495,6 @@ def plot_gaussian(mean, std, targets=None, labels=None, show=False):
     plt.grid()
     plt.legend(fontsize=legend_fontsize)
     plt.tight_layout()
-
     if show:
         plt.show()
 
@@ -504,14 +506,12 @@ def plot_mean_std(mean, std, targets=None, labels=None, show=False):
     """
     import collections.abc
 
-    # Use global font size and figure size variables
     title_fontsize = TITLE_FONTSIZE
     label_fontsize = LABEL_FONTSIZE
     tick_fontsize = TICK_FONTSIZE
     legend_fontsize = LEGEND_FONTSIZE
     figsize = FIGURE_SIZE
 
-    # Ensure mean and std are iterable
     if not isinstance(mean, collections.abc.Iterable):
         mean = [mean]
     if not isinstance(std, collections.abc.Iterable):
@@ -525,117 +525,116 @@ def plot_mean_std(mean, std, targets=None, labels=None, show=False):
         targets = [targets]
 
     x = np.arange(len(mean))
-    
     plt.figure(figsize=figsize)
     plt.errorbar(x, mean, yerr=std, fmt='o', capsize=5, color='skyblue', ecolor='black', elinewidth=1.5, markersize=8)
-    # Annotate each point with its mean and std
     for i, (xm, ym, ys) in enumerate(zip(x, mean, std)):
         text = f'{ym:.2f} ± {ys:.2f}'
         plt.text(xm + 0.05, ym, text, fontsize=14, va='center', ha='left', color='black', bbox=dict(facecolor='white', edgecolor='gray', boxstyle='round,pad=0.3'))
-    
-    # Plot target(s) if provided
     if targets is not None:
         for t in targets:
             plt.axhline(y=t, color='green', linestyle='--', label=f'Target: {int(t)}°')
             plt.axhspan(t-2.5, t+2.5, color='green', alpha=0.2, label='±2.5° zone')
-
-    # plt.xticks(x, labels, rotation=45)
     plt.title('Mean and Standard Deviation', fontsize=title_fontsize)
     plt.ylabel('Position [deg]', fontsize=label_fontsize)
     plt.xlabel('Runs', fontsize=label_fontsize)
-    plt.xticks(fontsize=tick_fontsize)
+    # Set x-axis ticks to 1, 2, 3, ... (instead of 0-based)
+    plt.xticks(ticks=x, labels=[str(i+1) for i in x], fontsize=tick_fontsize)
     plt.yticks(fontsize=tick_fontsize)
     plt.grid(axis='y')
     plt.legend(fontsize=legend_fontsize, loc='upper right')
     plt.tight_layout()
-    
     if show:
         plt.show()
 
+# === Analysis Functions ===
 def compute_gaussian_precise(df, save_fig=True):
     """
     Compute and plot Gaussian distributions for precise position runs.
     """
-    runs = ['eval_precise_pos_J_r',
-            'eval_precise_pos_J_l',
-            'eval_precise_pos_F']
-    
+    runs = ['eval_precise_pos_J_r', 'eval_precise_pos_J_l', 'eval_precise_pos_F', 'eval_precise_pos_C_r']
     for run in runs:
+        target = df.loc[df['run'] == run, 'target'].values[0]
         data_train = load_data(df, run + '_train', trim_type='ranges_gauss', trim=True)
         data_val = load_data(df, run, trim_type='ranges_gauss', trim=True)
-
-        new_data_train = divide_chunks(data_train)
-        new_data_val = divide_chunks(data_val)
-
+        new_data_train = divide_chunks(data_train, threshold=10 if run == 'eval_precise_pos_C_r' else 15)
+        new_data_val = divide_chunks(data_val, threshold=10 if run == 'eval_precise_pos_C_r' else 15)
         mean, std = [], []
-
         mean_train, std_train = calculate_mean_std_precise(new_data_train)
         mean_val, std_val = calculate_mean_std_precise(new_data_val)
-
+        if target == 42:
+            shift = -22 
+        elif target == 14:
+            shift = 6 
+        else:
+            shift = 0
+        mean_train += shift
+        mean_val += shift
+        target += shift
         mean.append(mean_train)
         std.append(std_train)
         mean.append(mean_val)
         std.append(std_val)
         labels = ['Train', 'Validation']
-
-        plot_gaussian(mean, std, targets=[df.loc[df['run'] == run, 'target'].values[0]], labels=labels, show=not save_fig)
-
+        plot_gaussian(mean, std, targets=[target], labels=labels, show=not save_fig)
         if save_fig:
             plot_name = 'plots_3/gaussian_' + run + '.png'
             plt.savefig(plot_name, dpi=150)
             print(f"Gaussian plot saved as {plot_name}")
-
         plt.close()
 
-
 def compute_mean_std(df, run_type="pos", save_fig=True):
+    """
+    Compute and plot mean/std for all runs of a given type (position or torque).
+    """
     if run_type == "pos":
-        runs = ['eval_position_J_r',
-                'eval_position_J_l',
-                'eval_position_F',
-                'eval_position_G']
+        runs = ['eval_position_J_r', 'eval_position_J_l', 'eval_position_F', 'eval_position_G', 'eval_position_C_r']
     elif run_type == "torque":
-        runs = ['eval_torque_J_r',
-                'eval_torque_J_l',
-                'eval_torque_F',
-                'eval_torque_G']
-    
-    labels = ['Subject 1 right arm', 'Subject 1 left arm', 'Subject 1 forearm', 'Subject 2 right arm']
+        runs = ['eval_torque_J_r', 'eval_torque_J_l', 'eval_torque_F', 'eval_torque_G', 'eval_torque_C_r']
+    labels = ['P1 right arm', 'P1 left arm', 'P1 forearm', 'P2 right arm', 
+              'P3 right arm']
     global_mean = []
     global_std = []
-    
+    targets = []
     for run in runs:
+        target = df.loc[df['run'] == run, 'target'].values[0]
         data_val = load_data(df, run, trim_type='ranges_gauss', trim=True)
-
-        new_data_val = divide_chunks(data_val, column='encoder_paddle_pos [deg]', threshold=5 if run_type == "pos" else df.loc[df['run'] == run, 'target'].values[0] - 10)
-
+        if run_type == "pos" and run == 'eval_position_C_r':
+            new_data_val = divide_chunks_C(data_val)
+        else:
+            new_data_val = divide_chunks(data_val, threshold=5 if run_type == "pos" else target - 10)
         if len(new_data_val) == 0:
             print(f"No valid chunks found for run {run}. Skipping.")
             continue
-
         mean_val, std_val = calculate_mean_std_pos(new_data_val)
-
+        if target == 42:
+            shift = np.ones_like(mean_val) * -22 
+        elif target == 14:
+            shift = np.ones_like(mean_val) * 6 
+        else:
+            shift = np.zeros_like(mean_val)
+        target += shift[0]
+        mean_val = mean_val + shift
         global_mean.append(np.mean(mean_val))
         global_std.append(np.mean(std_val))
-
-        plot_mean_std(mean_val, std_val, targets=[df.loc[df['run'] == run, 'target'].values[0]], labels=['Validation Mean', 'Validation Std'], show=not save_fig)
-
+        # print(f"Run: {run}, Mean: {np.mean(mean_val):.2f}, Std: {np.mean(std_val):.2f}, Target: {target}, chunks: {len(new_data_val)}")
+        plot_mean_std(mean_val, std_val, targets=[target], labels=['mean', 'std'], show=not save_fig)
         if save_fig:
             plot_name = 'plots_3/mean_std_' + run + '.png'
             plt.savefig(plot_name, dpi=150)
             print(f"Position plot saved as {plot_name}")
-
-        plt.close()
-
-    # Get all unique targets for the selected runs
-    unique_targets = list({df.loc[df['run'] == run, 'target'].values[0] for run in runs if df.loc[df['run'] == run, 'target'].values[0] is not None})
-    plot_gaussian(global_mean, global_std, targets=unique_targets, labels=labels, show=not save_fig)
+        # plt.close()
+        if target not in targets:
+                targets.append(target)
+    
+    plot_gaussian(global_mean, global_std, targets=targets, labels=labels, show=not save_fig)
+    print("Global Mean and Std computed")
 
     if save_fig:
         plot_name = f'plots_3/global_mean_std_{run_type}.png'
         plt.savefig(plot_name, dpi=150)
         print(f"Global Mean and Std plot saved as {plot_name}")
-    
+    else:
+        plt.show()
     plt.close()
 
 def compute_all_gaussian(df, save_fig=True):
@@ -645,17 +644,17 @@ def compute_all_gaussian(df, save_fig=True):
     If the target is 42, shift all means and targets by -22 to recenter the target to 20.
     """
     subjects = [
-        ("J_r", "Subject 1 right arm"),
-        ("J_l", "Subject 1 left arm"),
-        ("F", "Subject 1 forearm"),
-        ("G", "Subject 2 right arm"),
+        ("J_r", "P1 right arm"),
+        ("J_l", "P1 left arm"),
+        ("F", "P1 forearm"),
+        ("G", "P2 right arm"),
+        ("C_r", "P3 right arm")
     ]
     strategies = [
         ("torque", "eval_torque_{}"),
         ("position", "eval_position_{}"),
         ("precise_pos", "eval_precise_pos_{}"),
     ]
-
     for subj_code, subj_label in subjects:
         means = []
         stds = []
@@ -664,7 +663,6 @@ def compute_all_gaussian(df, save_fig=True):
         shift = 0
         for strat_name, run_fmt in strategies:
             run = run_fmt.format(subj_code)
-            # For precise_pos, use the validation run (not train)
             if strat_name == "precise_pos" and run not in df['run'].values:
                 run = f"eval_precise_pos_{subj_code}"
             if run not in df['run'].values:
@@ -672,20 +670,23 @@ def compute_all_gaussian(df, save_fig=True):
             data = load_data(df, run, trim_type='ranges_gauss', trim=True)
             if data is None or data.empty:
                 continue
-            # Divide into chunks and compute mean/std
             if strat_name == "precise_pos":
-                chunks = divide_chunks(data)
+                chunks = divide_chunks(data, threshold=10 if run == 'eval_precise_pos_C_r' else 15)
                 mean, std = calculate_mean_std_precise(chunks)
             else:
                 threshold = 5 if strat_name == "position" else df.loc[df['run'] == run, 'target'].values[0] - 10
-                chunks = divide_chunks(data, column='encoder_paddle_pos [deg]', threshold=threshold)
+                if run == 'eval_position_C_r':
+                    chunks = divide_chunks_C(data)
+                else:
+                    chunks = divide_chunks(data, column='encoder_paddle_pos [deg]', threshold=threshold)
                 mean_list, std_list = calculate_mean_std_pos(chunks)
                 mean = np.mean(mean_list)
                 std = np.mean(std_list)
             target = df.loc[df['run'] == run, 'target'].values[0]
-            # Determine shift if target is 42
             if target == 42:
-                shift = -22
+                shift = -22 
+            elif target == 14:
+                shift = 6 
             else:
                 shift = 0
             means.append(mean + shift)
@@ -694,7 +695,6 @@ def compute_all_gaussian(df, save_fig=True):
             t_shifted = target + shift if target is not None else None
             if t_shifted not in targets:
                 targets.append(t_shifted)
-        # Plot all three strategies for this subject
         if means and stds:
             plot_gaussian(means, stds, targets=targets, labels=labels, show=not save_fig)
             if save_fig:
@@ -703,26 +703,38 @@ def compute_all_gaussian(df, save_fig=True):
                 print(f"Gaussian plot for {subj_label} saved as {plot_name}")
             plt.close()
 
-# run = 'position'  # Change this to 'raw', 'torque', 'pos', or 'precise_pos' as needed
-# save_fig = False
-# plot_name = 'plots_3/' + run + '_plot.png'
-# data = load_data(df_info, run, trim=True)
+def save_all_plots(save_figures=True):
+    for run in filnames:
+        data = load_data(df_info, run, trim=True)
+        plot_name = 'plots_3/' + run + f'_plot.png'
+        plot_data(data, run, plot_name, save=save_figures, all=True)
+        print(f"Plots for {run} saved.")
 
-# new_data = divide_chunks(data, column='encoder_paddle_pos [deg]', threshold=10)
+# === Main Execution ===
+if __name__ == "__main__":
+    # run = 'eval_position_C_r'  # Example run to load and plot
 
-# mean, std = calculate_mean_std_pos(new_data)
-# plot_mean_std(mean, std, targets=[df_info.loc[df_info['run'] == run, 'target'].values[0]], labels=['Mean', 'Std'], show=True)
+    # SAVE = False
 
-# plot_data(data, run, plot_name, save=False)
+    # # Load data for a specific run
+    # data = load_data(df_info, run, trim_type='ranges_gauss', trim=True)
+    # new_data_val = divide_chunks_C(data, column='encoder_paddle_pos [deg]')
 
-# save_all_plots(save_figures=SAVE)
-compute_gaussian_precise(df_info, save_fig=SAVE)
-# compute_all_gaussian(df_info, save_fig=SAVE)
-# compute_mean_std(df_info, save_fig=SAVE)
-# compute_mean_std(df_info, run_type="torque", save_fig=SAVE)
+    # print(f"Loaded data for run {run} with {len(new_data_val)} chunks.")
+    # mean_val, std_val = calculate_mean_std_pos(new_data_val)
+    # print(f"Mean: {mean_val}, Std: {std_val}")
 
-if SAVE:
-    print("All plots generated and saved successfully.")
-else:
-    print("All plots generated and displayed interactively.")
+    # plot_data(data, run, '', save=SAVE, all=False)
+
+    # Uncomment the desired analysis
+    save_all_plots(save_figures=SAVE)
+    compute_gaussian_precise(df_info, save_fig=SAVE)
+    compute_mean_std(df_info, save_fig=SAVE)
+    compute_mean_std(df_info, run_type="torque", save_fig=SAVE)
+    compute_all_gaussian(df_info, save_fig=SAVE)
+
+    if SAVE:
+        print("All plots generated and saved successfully.")
+    else:
+        print("All plots generated and displayed interactively.")
 
